@@ -31,17 +31,35 @@ def coding_strand_to_AA(dna):
     """
     codon_strand = []
     for i in xrange(0, len(dna), 3): #this for loop steps by 3.
+                                        #Good use of the 3rd argument of range (well, xrange)
         codonSeq = dna[i:i+3] #takes a set of three dna pieces into codonSeq
-        for j in range(len(codons)):
+                                #Good use of substringing as well
+        for j in range(len(codons)): #Fine - this might be a good place to try for j in codons and skip
+                                        #the "range". Then you can operate on codons directly in the next line.
             if codonSeq in codons[j]: #checks if the codonSeq (M, R, A, etc. is a codon list)
+                                        #Good use of the in keyword too! Great code so far!
                 codon_strand.append(aa[j])
     codon_strand = collapse(codon_strand) #turns codon_strand list into a string
+                                            #Fine, but if you wanted, you could save 
+                                            # this line by making codon_strand a string when 
+                                            # it is defined. You can perform essentially the same
+                                            # operations on it.
     return codon_strand #returns the amino acid sequence from the dna 
             
+
+            #Doyung - I know I heavily commented this function. To be clear, this function looks great
+            # and my couple suggestions on it are simply very minor alterations you could make
+            # but are by no means needed. Even without the suggestions this is great code.
         
 
 def coding_strand_to_AA_unit_tests():
     """ Unit tests for the coding_strand_to_AA function """
+
+    #Interesting format for a unit test - if you go this route in future, it would help to familiarize
+    #yourself with the ability (and syntax) to input functions as an argument in Python. That way,
+    #you can enter the function name you would like to test and only write your unit test code once.
+    #By no means is this expected knowledge, but rather one useful thing you could self-teach
+
     inputDNA = raw_input("input: ", )
     expected_output = raw_input("expected output: ", )
     actual_output = coding_strand_to_AA(inputDNA) #calls the coding_strand_to_AA method with the inputDNA
@@ -61,6 +79,7 @@ def get_reverse_complement(dna):
         returns: the reverse complementary DNA sequence represented as a string
     """
     reverse_dna = dna[::-1] #handy dandy python way of reversing a string.
+                                #Yup - Great!
     comp_reverse_dna = []
     for i in xrange(0, len(reverse_dna)):
         if reverse_dna[i] == 'G':
@@ -73,6 +92,8 @@ def get_reverse_complement(dna):
             comp_reverse_dna.append('T')
     comp_reverse_dna = collapse(comp_reverse_dna)
     return comp_reverse_dna
+
+    #Looks fantastic!
 
     
 def get_reverse_complement_unit_tests():
@@ -100,6 +121,7 @@ def rest_of_ORF(dna):
     for i in xrange(0, len(dna), 3): #this for loop steps by 3.
         codonSeq = dna[i:i+3] #takes a set of three dna pieces into codonSeq
         if codonSeq <> 'TAG' and codonSeq <> 'TAA' and codonSeq <> 'TGA':
+                #Great - for future reference you could also say "if not codonSeq in ['TAG','TAA','TGA']: "
             final_codonSeq.append(codonSeq)
         else:
             break #if it is any of the three sequences, it means it's a stop codon. Stop going through the loop.
@@ -117,8 +139,13 @@ def rest_of_ORF_unit_tests():
     else:
         true_false = False 
     print "Did actual and expected outputs match?: ", true_false
-               
-def find_all_ORFs_oneframe(j, dna):
+
+
+def find_all_ORFs_oneframe(j, dna): # If you are given skeleton code, don't add extra arguments. The issue
+                                    # is that whomever wrote the skeleton code expects to be able to 
+                                    # have exactly the arguments and return values they laid out.
+                                    # For example, since everyone's functions are uniform, I can run
+                                    # unit tests on their whole file, but yours breaks the tests.
     """ Finds all non-nested open reading frames in the given DNA sequence and returns
         them as a list.  This function should only find ORFs that are in the default
         frame of the sequence (i.e. they start on indices that are multiples of 3).
@@ -180,9 +207,15 @@ def find_all_ORFs(dna):
         dna: a DNA sequence
         returns: a list of non-nested ORFs
     """
+    #This function is bugged (or rather the function find_all_ORFS_oneframe is, but it shows up here
+        #since this function uses find_all_ORFs_oneframe and that one broke the unit tests)
+    #It misses this case of the unit test: 
+    #input: ATGTGCATGAGATAGGATGGGATGCTTG, expected output: ['ATGTGCATGAGA', 'ATGCTTG', 'ATGGGATGCTTG'], 
+                                           #actual output: ['ATGTGCATGAGA', 'ATGGGATGCTTG']
     
     no_move = find_all_ORFs_oneframe(0, dna)
-    move_one = find_all_ORFs_oneframe(1, dna)
+    move_one = find_all_ORFs_oneframe(1, dna) #Rather than use this j parameter you've created, you could 
+                                                #do this with substringing as dna[1:]
     move_two = find_all_ORFs_oneframe(2, dna)    
     return no_move + move_one + move_two
 
@@ -206,6 +239,9 @@ def find_all_ORFs_both_strands(dna):
         dna: a DNA sequence
         returns: a list of non-nested ORFs
     """
+
+    #Also bugged (I assume the earlier bug cascades through here)
+
     first_way = find_all_ORFs(dna) #find the ORFs in the original direction
     reverse_dna = get_reverse_complement(dna) #get the reverse complementary strand
     other_way = find_all_ORFs(reverse_dna) #find the ORFs in the reverse complementary direction
@@ -227,8 +263,9 @@ def find_all_ORFs_both_strands_unit_tests():
 def longest_ORF(dna):
     """ Finds the longest ORF on both strands of the specified DNA and returns it
         as a string"""
-    longest_ORF_strand = max(find_all_ORFs_both_strands(dna), key=len)
-    return longest_ORF_strand
+    longest_ORF_strand = max(find_all_ORFs_both_strands(dna), key=len) #Beautiful - one note: there's no point saving this in a var
+                                                                        #before you return it. Just one line this and it would be perfect
+    return longest_ORF_strand 
 
 def longest_ORF_unit_tests():
     """ Unit tests for the longest_ORF function """
